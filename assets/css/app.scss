@@ -2,5 +2,36 @@
 
 @import "bootstrap";
 
-.side { padding: 4ex; text-align: center; }
+//.side { padding: 4ex; text-align: center; }
 h1 { text-align: center; }
+.btn {
+  text-align: center;
+  font-size: 40px;
+  height: 100px;
+  width: 100px;
+  border: solid black 1px;
+  background-color: #79AEE8;
+  color: black;
+}
+.btn-primary {
+  border: solid black 1px;
+  background-color: #79AEE8;
+  color: black;
+}
+.btn-primary:disabled {
+  border: solid black 1px;
+  background-color: #90EE90;
+  color: black;
+}
+.btn-default {
+  height: 40px;
+  width: 90px;
+  color: black;
+}
+.blocks {
+  text-align: center;
+}
+#clicks {
+  font-size: 16px;
+  font-weight: bold;
+}
