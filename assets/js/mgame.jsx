@@ -22,8 +22,6 @@ class MGame extends React.Component {
       prevTile: null,
       letters: ['A1','B1','C1','D1','E1','F1','G1','H1','A2','B2','C2','D2','E2','F2','G2','H2']
     };
-    this.setNewState = this.setNewState.bind(this);
-    this.reset = this.reset.bind(this);
   }
 
   // update the state of game
@@ -82,7 +80,7 @@ class MGame extends React.Component {
       Total Clicks: <span id="totalClicks">0</span>
       </div>
       <div>
-      <button className="btn-default" onClick={this.reset}>Restart</button>
+      <button className="btn-default" onClick={()=>this.reset()}>Restart</button>
       </div>
       </div>
     );
