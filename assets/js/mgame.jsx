@@ -81,7 +81,6 @@ class MGame extends React.Component {
   }
 }
 
-
 function Tiles(props) {
   function checkTiles(e){
     props.root.updateTiles(e.target.id);
