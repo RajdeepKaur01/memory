@@ -36,47 +36,43 @@ defmodule Memory.Game do
       curr = Enum.at(letters2,t1)
       if !(game.prevTile==t1) do
         cond do
-          game.prevTile=="*" -> Map.merge(game,
-          %{
-            prevTile: t1,
-            board: "boardOn"
-            })
-            String.at(Enum.at(letters2,game.prevTile),0)==String.at(curr,0) ->
-              pt = game.prevTile
-              prev = Enum.at(letters2,pt)
-              letters2 = List.replace_at(letters2,pt,String.replace_suffix(prev,"0","1"))
-              letters2 = List.replace_at(letters2,t1,String.replace_suffix(curr,"0","1"))
-              display2 = List.replace_at(game.display, t1, "")
-              display2 = List.replace_at(display2, pt, "")
-              :timer.sleep(1000)
-              Map.merge(game,
-              %{
-                prevTile: "*",
-                letters: letters2,
-                display: display2,
-                board: "boardOn"
-                })
-                true ->
-                  pt = game.prevTile
-                  display2 = List.replace_at(game.display, t1, "")
-                  display2 = List.replace_at(display2, pt, "")
-                  :timer.sleep(1000)
-                  Map.merge(game,
-                  %{
-                    prevTile: "*",
-                    display: display2,
-                    board: "boardOn"
-                    })
-                  end
-                else
-                  game
-                end
-              end
+          game.prevTile=="*" -> Map.merge(game,%{ prevTile: t1, board: "boardOn" })
+          String.at(Enum.at(letters2,game.prevTile),0)==String.at(curr,0) ->
+            pt = game.prevTile
+            prev = Enum.at(letters2,pt)
+            letters2 = List.replace_at(letters2,pt,String.replace_suffix(prev,"0","1"))
+            letters2 = List.replace_at(letters2,t1,String.replace_suffix(curr,"0","1"))
+            display2 = List.replace_at(game.display, t1, "")
+            display2 = List.replace_at(display2, pt, "")
+            :timer.sleep(1000)
+            Map.merge(game,
+            %{
+              prevTile: "*",
+              letters: letters2,
+              display: display2,
+              board: "boardOn"
+              })
+          true ->
+            pt = game.prevTile
+            display2 = List.replace_at(game.display, t1, "")
+            display2 = List.replace_at(display2, pt, "")
+            :timer.sleep(1000)
+            Map.merge(game,
+            %{
+              prevTile: "*",
+              display: display2,
+              board: "boardOn"
+              })
+        end
+      else
+        game
+      end
+    end
 
-              def reset(game) do
-                new_letters = Enum.shuffle(game.letters)
-                Map.merge(game, %{
-                  letters: new_letters,
-                  })
-                end
-              end
+    def reset(game) do
+      new_letters = Enum.shuffle(game.letters)
+      Map.merge(game, %{
+        letters: new_letters,
+        })
+      end
+end
