@@ -1,0 +1,14 @@
+<!-- <h1>Memory Game</h1> -->
+
+<div class="row">
+  <div class="col">
+    <h1>Memory Game: <span id="user"><%= @game %></span></h1>
+    <script>
+      window.gameName = "<%= @game %>";
+    </script>
+    <div id="root">
+      <p>React app not loaded...</p>
+    </div>
+    <!-- <p><a href="/" id="link2">Back to Join Page</a></p> -->
+  </div>
+</div>

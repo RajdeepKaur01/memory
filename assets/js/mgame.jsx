@@ -4,128 +4,93 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Button } from 'reactstrap';
 
-export default function run_game(root) {
-  ReactDOM.render(<MGame />, root);
+export default function run_game(root,channel) {
+  ReactDOM.render(<MGame channel={channel}/>, root);
 }
 
 // App state for Game is:
 // {
-//    prevTile: String    // prev tile value
-//    letters: Array     // Values of tiles displayed
+//    prevTile: String     // prev tile value
+//    letters: Array      // Values of tiles displayed
+//    display: Array     // Values displayed on tiles
+//    clicks: Number    //  Count of Clicks
+//    board: String     // Tells if pointer events should work or not
 // }
 //
 
 class MGame extends React.Component {
   constructor(props) {
     super(props);
+    this.channel = props.channel;
     this.state = {
-      prevTile: null,
-      letters: ['A1','B1','C1','D1','E1','F1','G1','H1','A2','B2','C2','D2','E2','F2','G2','H2']
+      prevTile: "*",
+      letters: ['A10','B10','C10','D10','E10','F10','G10','H10','A20','B20','C20','D20','E20','F20','G20','H20'],
+      display: ['','','','','','','','','','','','','','','',''],
+      clicks: 0,
+      board: "boardOn"
     };
+    this.channel.join()
+    .receive("ok", this.gotView.bind(this))
+    .receive("error", resp => { console.log("Unable to join", resp) });
   }
 
-  // update the state of game
-  setNewState(c1){
-    let st1 = _.extend(this.state, {
-      prevTile: c1
-    });
-    this.setState(st1);
+  gotView(view){
+    console.log("New View",view);
+    this.setState(view.game);
   }
 
   // Reset the game
   reset(){
-    let new_letters = _.shuffle(this.state.letters);
-    let st2 = _.extend(this.state, {
-      prevTile: null,
-      letters: new_letters
-    });
-    this.setState(st2);
-    this.state.letters.map((letter) => {
-      document.getElementById(letter).disabled = false;
-      document.getElementById(letter).innerHTML = "";
-    });
-    document.getElementById("totalClicks").innerHTML=0;
+    this.channel.push("reset",{ })
+    .receive("ok", this.gotView.bind(this));
+  }
+
+  // update tiles
+  updateTiles(id){
+    let id1 = ""+id;
+    this.channel.push("updateDisplay",{ currId: id1 })
+    .receive("ok", this.gotView.bind(this));
+
+    this.channel.push("inclicks",{ currId: id1 })
+    .receive("ok", this.gotView.bind(this));
   }
 
   render(){
     return(
       <div id="blocks" className="blocks">
-      <div id="board">
-      <div>
-      <Tiles id={this.state.letters[0]} root={this}/>
-      <Tiles id={this.state.letters[1]} root={this}/>
-      <Tiles id={this.state.letters[2]} root={this}/>
-      <Tiles id={this.state.letters[3]} root={this}/>
+      <div id={this.state.board}>
+      {[0,4,8,12].map((i)=>
+        <div key={i}>
+        {[0,1,2,3].map((j)=>
+          <Tiles key={i+j} id= {i+j} root={this}/>
+        )}
+        </div>
+      )}
       </div>
-      <div>
-      <Tiles id={this.state.letters[4]} root={this}/>
-      <Tiles id={this.state.letters[5]} root={this}/>
-      <Tiles id={this.state.letters[6]} root={this}/>
-      <Tiles id={this.state.letters[7]} root={this}/>
-      </div>
-      <div>
-      <Tiles id={this.state.letters[8]} root={this}/>
-      <Tiles id={this.state.letters[9]} root={this}/>
-      <Tiles id={this.state.letters[10]} root={this}/>
-      <Tiles id={this.state.letters[11]} root={this}/>
-      </div>
-      <div>
-      <Tiles id={this.state.letters[12]} root={this}/>
-      <Tiles id={this.state.letters[13]} root={this}/>
-      <Tiles id={this.state.letters[14]} root={this}/>
-      <Tiles id={this.state.letters[15]} root={this}/>
-      </div>
-      </div><br/>
+      <br/>
       <div id="clicks">
-      Total Clicks: <span id="totalClicks">0</span>
+      Total Clicks: <span id="totalClicks">{this.state.clicks}</span>
       </div>
       <div>
-      <button className="btn-default" onClick={()=>this.reset()}>Restart</button>
+      <button className="btn-default" onClick={()=>this.reset()}>
+      Restart
+      </button>
       </div>
       </div>
     );
   }
 }
 
+
 function Tiles(props) {
   function checkTiles(e){
-    if(props.root.state.prevTile!=e.target.id){
-      //Increment Clicks
-      let totalClicksValue = document.getElementById("totalClicks");
-      totalClicksValue.innerHTML=Number(totalClicksValue.innerHTML)+1;
-      let previous = props.root.state.prevTile;
-      let curr=e.target;
-      //Update Selected Tile
-      curr.innerHTML=curr.id.charAt(0);
-      // Check if Tile Letter is same as previous
-      if(previous==null){
-        props.root.setNewState(curr.id);
-      }
-      else if(previous.charAt(0)==curr.id.charAt(0)){
-        props.root.setNewState(null);
-        document.getElementById('board').style.pointerEvents = 'none';
-        console.log("SAME");
-        setTimeout(() => {
-          curr.innerHTML="";
-          curr.disabled=true;
-          document.getElementById(previous).innerHTML="";
-          document.getElementById(previous).disabled=true;
-          document.getElementById('board').style.pointerEvents = 'auto';
-        },1000);
-      }
-      else{
-        document.getElementById('board').style.pointerEvents = 'none';
-        setTimeout(() => {
-          props.root.setNewState(null);
-          document.getElementById(previous).innerHTML="";
-          curr.innerHTML="";
-          console.log("DIFFERENT");
-          document.getElementById('board').style.pointerEvents = 'auto';
-        }, 1000);
-      }
-    }
+    props.root.updateTiles(e.target.id);
   }
-  return(
-    <button className="btn btn-primary" id={props.id} onClick={checkTiles} />
-  );
-}
+  let state = props.root.state;
+  return(<button
+    className={"btn btn-primary button"+state.letters[props.id].charAt(2)}
+    id={props.id}
+    onClick={checkTiles}>
+    {state.display[props.id]}
+    </button>);
+  }

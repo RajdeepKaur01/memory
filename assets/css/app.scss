@@ -28,10 +28,24 @@ h1 { text-align: center; }
   width: 90px;
   color: black;
 }
+.button0 {
+}
+.button1 {
+  pointer-events: none;
+  border: solid black 1px;
+  background-color: #00ced1;
+  color: black;
+}
 .blocks {
   text-align: center;
 }
 #clicks {
   font-size: 16px;
   font-weight: bold;
+}
+#boardOn {
+  pointer-events: auto;
+}
+#boardOff {
+  pointer-events: none;
 }
